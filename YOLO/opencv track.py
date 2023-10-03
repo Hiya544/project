@@ -34,7 +34,8 @@ def mouse_event(event, x, y, flags, param):
         x, y, w, h = start_x, start_y, end_x - start_x, end_y - start_y
         selected_object = (x, y, w, h)
         object_selected = True
-        tracker = None  # 객체가 새로 선택되면 추적기 초기화
+        tracker = cv.TrackerKCF_create()
+        tracker.init(img, (x, y, w, h))  # 선택한 객체를 추적기로 초기화
 
 cv.namedWindow('object_detection', cv.WINDOW_NORMAL)
 cv.setMouseCallback('object_detection', mouse_event)
@@ -47,16 +48,14 @@ while video.isOpened():
     img = cv.resize(img, None, fx=0.4, fy=0.4)
     height, width, channels = img.shape
 
-    if object_selected:
-        if tracker is None:
-            tracker = cv.TrackerKCF_create()
-            bbox = (x, y, w, h)
-            tracker.init(img, bbox)
+    if object_selected and selected_object is not None:
+        success, bbox = tracker.update(img)
+        if success:
+            x, y, w, h = map(int, bbox)
+            cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
         else:
-            success, bbox = tracker.update(img)
-            if success:
-                x, y, w, h = map(int, bbox)
-                cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            object_selected = False  # 추적이 끊겼을 때 객체 선택 해제
+
     else:
         # 객체가 선택되지 않은 경우, YOLO로 객체를 검출하고 선택합니다.
         blob = cv.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
@@ -82,15 +81,15 @@ while video.isOpened():
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
 
-        indexes = cv.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-        font = cv.FONT_HERSHEY_PLAIN
-        for i in range(len(boxes)):
-            if i in indexes:
+        # 객체 선택 영역 선택
+        if len(boxes) > 0:
+            for i in range(len(boxes)):
                 x, y, w, h = boxes[i]
-                label = str(classes[class_ids[i]]) if len(class_ids) > 0 else 'No Object Detected'
-                color = colors[class_ids[i]] if len(class_ids) > 0 else (0, 0, 0)
-                cv.rectangle(img, (x, y), (x + w, y + h), color, 2)
-                cv.putText(img, label, (x, y + 30), font, 3, color, 3)
+                if x < start_x < x + w and y < start_y < y + h:
+                    selected_object = (x, y, w, h)
+                    object_selected = True
+                    tracker = cv.TrackerKCF_create()
+                    tracker.init(img, (x, y, w, h))  # 선택한 객체를 추적기로 초기화
 
     cv.imshow('object_detection', img)
     key = cv.waitKey(1)
