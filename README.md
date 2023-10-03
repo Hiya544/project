@@ -8,10 +8,15 @@ CCTV를 활용한 실시간 객체 추적은 그림 1 과 같이 웹 애플리�
 사용자는 PC의 브라우저를 이용하여 학습된 정보를 바탕으로 인물을 지속적으로 추적할 수 있다. 상호 작용은 그림2와 같다
 
 그림 1 시스템의 구성
+
 ![image01](https://github.com/Hiya544/project/assets/62420840/f622334e-4254-4213-a13a-bb241da5f9eb)
+
 그림2 시스템의 구성 요소간의 상호작용
+
 ![화면 캡처 2023-10-03 180202](https://github.com/Hiya544/project/assets/62420840/cb933a98-1ce6-436e-8d38-c811f0fe9d1e)
+
 2.추적 시스템의 기능 설계
+
 ![image02](https://github.com/Hiya544/project/assets/62420840/85fc2380-3d52-4369-a77c-db36f00fcb54)
 
 
