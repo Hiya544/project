@@ -7,11 +7,11 @@ classes = []
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
 layer_names = net.getLayerNames()
-output_layers = [layer_names[int(i[0]) - 1] for i in net.getUnconnectedOutLayers()]
+output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # 이미지 가져오기
-video = cv.VideoCapture('test2.mp4')
+video = cv.VideoCapture(1)
 
 count = 0
 while video.isOpened():
