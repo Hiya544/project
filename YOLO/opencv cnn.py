@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
 
-# YOLO 로드
 net = cv.dnn.readNet("yolov3.weights", "yolov3.cfg")
 classes = []
 with open("coco.names", "r") as f:
@@ -10,7 +9,7 @@ layer_names = net.getLayerNames()
 output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-# 이미지 가져오기
+
 video = cv.VideoCapture(1)
 
 count = 0
@@ -22,12 +21,10 @@ while video.isOpened():
         img = cv.resize(img, None, fx=0.4, fy=0.4)
         height, width, channels = img.shape
 
-        # Detecting objects
         blob = cv.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
         net.setInput(blob)
         outs = net.forward(output_layers)
 
-        # 정보를 화면에 표시
         class_ids = []
         confidences = []
         boxes = []
@@ -37,12 +34,12 @@ while video.isOpened():
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
                 if confidence > 0.5:
-                    # Object detected
+                   
                     center_x = int(detection[0] * width)
                     center_y = int(detection[1] * height)
                     w = int(detection[2] * width)
                     h = int(detection[3] * height)
-                    # 좌표
+                   
                     x = int(center_x - w / 2)
                     y = int(center_y - h / 2)
                     boxes.append([x, y, w, h])
@@ -61,8 +58,8 @@ while video.isOpened():
 
         cv.imshow('object_detection', img)
         key = cv.waitKey(1)
-        if key == 32:  # Space
+        if key == 32:  
             key = cv.waitKey(0)
-        if key == 27:  # ESC
+        if key == 27:  
             break
 cv.destroyAllWindows()
